@@ -4,11 +4,12 @@ import (
 	"errors"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/entertrans/go-base-project.git/internal/config"
 	"github.com/entertrans/go-base-project.git/internal/model"
 	"github.com/entertrans/go-base-project.git/internal/repository"
-	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService interface {

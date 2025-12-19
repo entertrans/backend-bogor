@@ -8,6 +8,7 @@ import (
 	"github.com/entertrans/go-base-project.git/internal/config"
 	"github.com/entertrans/go-base-project.git/internal/controller"
 	"github.com/entertrans/go-base-project.git/internal/handler"
+	"github.com/entertrans/go-base-project.git/internal/model"
 	"github.com/entertrans/go-base-project.git/internal/repository"
 	"github.com/entertrans/go-base-project.git/internal/router"
 	"github.com/entertrans/go-base-project.git/internal/service"
@@ -29,39 +30,23 @@ func main() {
 	}
 
 	// 4. Run Migrations
-	// if err := db.AutoMigrate(
-	// 	&model.Siswa{},
-	// 	&model.Kelas{},
-	// 	&model.User{},
-	// ); err != nil {
-	// 	log.Fatal("Failed to migrate database:", err)
-	// }
+	if err := db.AutoMigrate(&model.User{}); err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
 
 	// 5. Dependency Injection
-	// Auth dependencies
 	userRepo := repository.NewUserRepository(db)
 	authService := service.NewAuthService(userRepo, cfg)
 	authController := controller.NewAuthController(authService)
 	authHandler := handler.NewAuthHandler(authController)
-	
-	// Siswa dependencies (sederhana)
-	siswaController := controller.NewSiswaController(db)
-	siswaHandler := handler.NewSiswaHandler(siswaController)
-	
-	// Ping handler
 	pingHandler := handler.NewPingHandler()
 
 	// 6. Setup Router
 	r := gin.Default()
 	r.Use(logger.LoggerMiddleware())
 
-	// Setup router
-	appRouter := router.NewRouter(
-		pingHandler, 
-		authHandler, 
-		siswaHandler,  // tambah ini
-		cfg.JWTSecret,
-	)
+	// Setup router dengan dependency injection
+	appRouter := router.NewRouter(pingHandler, authHandler, cfg.JWTSecret)
 	appRouter.SetupRoutes(r)
 
 	// 7. Start Server

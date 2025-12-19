@@ -1,5 +1,6 @@
 module github.com/entertrans/go-base-project.git
 
+
 go 1.24.0
 
 toolchain go1.24.4
